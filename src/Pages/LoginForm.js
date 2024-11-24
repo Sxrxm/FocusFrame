@@ -1,10 +1,37 @@
 import React, { useState } from "react";
-import agendar from './agendar.webp';
+import agendar from "./../agendar.webp";
 
 export default function LoginForm() {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
+  const [correo, setCorreo] = useState("");
+  const [password, setPassword] = useState("");
+  const [mensajeError, setMensajeError] = useState("");
 
-  
+
+  const handleLogin = async (e) => {
+    e.preventDefault(); 
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo, password }),
+    };
+
+    try {
+      const response = await fetch("http://localhost:8080/login", requestOptions);
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem("token", data.token);
+        console.log("Inicio de sesión exitoso:", data);
+      } else {
+        const errorData = await response.json();
+        setMensajeError(errorData.message || "Error en el inicio de sesión");
+      }
+    } catch (error) {
+      setMensajeError("Error de conexión con el servidor");
+    }
+  };
+
+ 
   const toggleMode = () => setIsSignUpMode(!isSignUpMode);
 
   return (
@@ -13,8 +40,9 @@ export default function LoginForm() {
         <div className="inner-box">
           <div className="forms-wrap">
             
+            {/* Formulario de Inicio de Sesión */}
             {!isSignUpMode && (
-              <form action="index.html" autoComplete="off" className="sign-in-form">
+              <form onSubmit={handleLogin} autoComplete="off" className="sign-in-form">
                 <div className="logo">
                   <h4>Focus Frame</h4>
                 </div>
@@ -28,10 +56,11 @@ export default function LoginForm() {
                 <div className="actual-form">
                   <div className="input-wrap">
                     <input
-                      type="text"
-                      minLength="4"
+                      type="email"
                       className="input-field"
                       autoComplete="off"
+                      value={correo}
+                      onChange={(e) => setCorreo(e.target.value)}
                       required
                     />
                     <label>Correo</label>
@@ -39,25 +68,28 @@ export default function LoginForm() {
                   <div className="input-wrap">
                     <input
                       type="password"
-                      minLength="4"
                       className="input-field"
                       autoComplete="off"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                     />
-                    <label>Password</label>
+                    <label>Contraseña</label>
                   </div>
-                  <input type="submit" value="Iniciar Sesion" className="sign-btn" />
+                  <button type="submit" className="sign-btn">
+                    Iniciar Sesión
+                  </button>
+                  {mensajeError && <p className="error-message">{mensajeError}</p>}
                   <p className="text">
-                    ¿Olvidaste tu contraseña?
-                    <a href="#">Recuperar</a>
+                    ¿Olvidaste tu contraseña? <a href="#">Recuperar</a>
                   </p>
                 </div>
               </form>
             )}
 
-            
+            {/* Formulario de Registro */}
             {isSignUpMode && (
-              <form action="index.html" autoComplete="off" className="sign-up-form">
+              <form action="#" autoComplete="off" className="sign-up-form">
                 <div className="logo">
                   <h4>Focus Frame</h4>
                 </div>
@@ -65,43 +97,33 @@ export default function LoginForm() {
                   <h2>Registrarse</h2>
                   <h6>¿Ya tienes una cuenta?</h6>
                   <a href="#" onClick={toggleMode} className="toggle">
-                    Iniciar Sesion
+                    Iniciar Sesión
                   </a>
                 </div>
                 <div className="actual-form">
                   <div className="input-wrap">
-                    <input
-                      type="text"
-                      minLength="4"
-                      className="input-field"
-                      autoComplete="off"
-                      required
-                    />
+                    <input type="text" className="input-field" autoComplete="off" required />
                     <label>Nombre</label>
                   </div>
                   <div className="input-wrap">
-                    <input
-                      type="email"
-                      className="input-field"
-                      autoComplete="off"
-                      required
-                    />
-                    <label>Email</label>
+                    <input type="email" className="input-field" autoComplete="off" required />
+                    <label>Correo</label>
                   </div>
                   <div className="input-wrap">
                     <input
                       type="password"
-                      minLength="4"
                       className="input-field"
                       autoComplete="off"
                       required
                     />
-                    <label>Password</label>
+                    <label>Contraseña</label>
                   </div>
-                  <input type="submit" value="Registrarme" className="sign-btn" />
+                  <button type="submit" className="sign-btn">
+                    Registrarme
+                  </button>
                   <p className="text">
-                    Al registrarme, acepto los
-                    <a href="#">Términos de Servicio</a> y la
+                    Al registrarme, acepto los{" "}
+                    <a href="#">Términos de Servicio</a> y la{" "}
                     <a href="#">Política de Privacidad</a>
                   </p>
                 </div>
@@ -109,18 +131,18 @@ export default function LoginForm() {
             )}
           </div>
 
-          
+          {/* Sección de Imagen */}
           <div className="carousel-img">
             <div className="images-wrapper">
-              <img src={agendar} className="image img-1" />
-              <p className="image-text">Con <span className="highlight">FocusFrame</span>, administra
-                 tu calendario, citas y archivos de cliente desde
-                  una interfaz unificada. </p>
-            </div>
+              <img src={agendar} className="image img-1" alt="Focus Frame" />
+              <p className="image-text">
+                Con <span className="highlight">FocusFrame</span>, administra tu calendario, citas y
+                archivos de cliente desde una interfaz unificada.
+              </p>
             </div>
           </div>
         </div>
-    
+      </div>
     </main>
   );
 }

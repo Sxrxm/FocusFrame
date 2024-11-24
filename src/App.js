@@ -1,7 +1,7 @@
 
 import React from'react';
 import './App.css';
-import LoginForm from './LoginForm';
+import LoginForm from './Pages/LoginForm';
 
 function App() {
   return (
