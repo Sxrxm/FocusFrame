@@ -16,29 +16,32 @@ import java.util.Objects;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-	private static final String EMAIL_OR_PASSWORD_INVALID = "Invalid email or password.";
 
 	private final UserService userService;
 
+	public UserDetailsServiceImpl(UserService userService) {
+		this.userService = userService;
+	}
+
 	@Override
-	public UserDetails loadUserByUsername(String email) {
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		AuthenticatedUserDto authenticatedUser = userService.findAuthenticatedUserByEmail(email);
 
-		// Buscar el usuario por correo electrónico en lugar de nombre de usuario
-		final AuthenticatedUserDto authenticatedUser = userService.findAuthenticatedUserByEmail(email);
-
-		if (Objects.isNull(authenticatedUser)) {
-			throw new UsernameNotFoundException(EMAIL_OR_PASSWORD_INVALID);
+		if (authenticatedUser == null) {
+			throw new UsernameNotFoundException("Email not found");
 		}
 
-		final String authenticatedEmail = authenticatedUser.getEmail();  // Usamos el correo en lugar del nombre de usuario
+
+		final String authenticatedEmail = authenticatedUser.getEmail();
 		final String authenticatedPassword = authenticatedUser.getPassword();
 		final UserRole userRole = authenticatedUser.getUserRole();
 		final SimpleGrantedAuthority grantedAuthority = new SimpleGrantedAuthority(userRole.name());
 
-		// Devuelve un objeto User (de Spring Security) con el correo, la contraseña y el rol del usuario
 		return new User(authenticatedEmail, authenticatedPassword, Collections.singletonList(grantedAuthority));
+
 	}
+
+
 }

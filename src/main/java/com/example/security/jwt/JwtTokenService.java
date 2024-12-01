@@ -8,20 +8,29 @@ import com.example.security.mapper.UserMapper; // Asegúrate de que este Mapper 
 import com.example.security.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-@Slf4j
+
 @Service
-@RequiredArgsConstructor
 public class JwtTokenService {
+	private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
+
 
 	private final UserService userService;
 	private final JwtTokenManager jwtTokenManager;
 	private final AuthenticationManager authenticationManager;
 
-	public LoginResponse getLoginResponse(LoginRequest loginRequest) {
+    public JwtTokenService(UserService userService, JwtTokenManager jwtTokenManager, AuthenticationManager authenticationManager) {
+        this.userService = userService;
+        this.jwtTokenManager = jwtTokenManager;
+        this.authenticationManager = authenticationManager;
+    }
+
+    public LoginResponse getLoginResponse(LoginRequest loginRequest) {
 
 		final String email = loginRequest.getEmail();
 		final String password = loginRequest.getPassword();
@@ -31,9 +40,8 @@ public class JwtTokenService {
 
 		authenticationManager.authenticate(authenticationToken);
 
-		final AuthenticatedUserDto authenticatedUserDto = userService.findAuthenticatedUserByEmail(email);
+		final User user = userService.findByEmail(email);
 
-		final User user = UserMapper.INSTANCE.convertToUser(authenticatedUserDto);
 
 		final String token = jwtTokenManager.generateToken(user);
 

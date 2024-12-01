@@ -1,5 +1,7 @@
 package com.example.security;
 
+import com.example.security.jwt.JwtAuthenticationFilter;
+import com.example.security.jwt.JwtTokenManager;
 import com.example.security.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,48 +9,49 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;
+    private final JwtTokenManager jwtTokenManager;
 
-    // Constructor con @Lazy en UserDetailsServiceImpl para evitar dependencia circular si es necesario
-    public SecurityConfig(@Lazy UserDetailsServiceImpl userDetailsService) {
+    public SecurityConfig(@Lazy UserDetailsServiceImpl userDetailsService, JwtTokenManager jwtTokenManager) {
         this.userDetailsService = userDetailsService;
+        this.jwtTokenManager = jwtTokenManager;
     }
 
-    // Definir AuthenticationManager como un Bean
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder =
                 http.getSharedObject(AuthenticationManagerBuilder.class);
-
         authenticationManagerBuilder
-                .userDetailsService(userDetailsService) // Usa tu implementación personalizada de UserDetailsService
-                .passwordEncoder(passwordEncoder()); // Usamos un PasswordEncoder como BCryptPasswordEncoder
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
 
         return authenticationManagerBuilder.build();
     }
 
-    // Bean para el PasswordEncoder
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    // Configuración de la seguridad para manejar las rutas y autorizaciones
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authz ->
-                        authz
-                                .requestMatchers("/auth/login", "/auth/register").permitAll()  // Permite el acceso sin autenticación a login y register
-                                .anyRequest().authenticated()  // Resto de las rutas requieren autenticación
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .anyRequest().authenticated()
                 );
+
+        http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenManager, userDetailsService), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
-
 }

@@ -18,4 +18,27 @@ public class JwtProperties {
 
 	private long expirationMinute;
 
+	public String getIssuer() {
+		return issuer;
+	}
+
+	public void setIssuer(String issuer) {
+		this.issuer = issuer;
+	}
+
+	public String getSecretKey() {
+		return secretKey;
+	}
+
+	public void setSecretKey(String secretKey) {
+		this.secretKey = secretKey;
+	}
+
+	public long getExpirationMinute() {
+		return expirationMinute;
+	}
+
+	public void setExpirationMinute(long expirationMinute) {
+		this.expirationMinute = expirationMinute;
+	}
 }

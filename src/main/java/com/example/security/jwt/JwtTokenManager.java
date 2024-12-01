@@ -6,6 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
 import com.example.model.User;
 import com.example.model.UserRole;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -13,35 +14,41 @@ import java.util.Date;
 @Component
 public class JwtTokenManager {
 
-	private final JwtProperties jwtProperties;
+	@Value("${jwt.secretKey}")
+	private String secretKey;
 
-	public JwtTokenManager(JwtProperties jwtProperties) {
-		this.jwtProperties = jwtProperties;
+	@Value("${jwt.expirationMinute}")
+	private long expirationMinute;
+
+	@Value("${jwt.issuer}")
+	private String issuer;
+
+	public JwtTokenManager() {
 	}
 
 	public String generateToken(User user) {
-		String username = user.getUsername();
+		String email = user.getEmail();
 		UserRole userRole = user.getUserRole();
 
 		return JWT.create()
-				.withSubject(username)
-				.withIssuer(jwtProperties.getIssuer())
+				.withSubject(email)
+				.withIssuer(issuer)
 				.withClaim("role", userRole.name())
 				.withIssuedAt(new Date())
-				.withExpiresAt(new Date(System.currentTimeMillis() + jwtProperties.getExpirationMinute() * 60 * 1000))
-				.sign(Algorithm.HMAC256(jwtProperties.getSecretKey().getBytes()));
+				.withExpiresAt(new Date(System.currentTimeMillis() + expirationMinute * 60 * 1000))
+				.sign(Algorithm.HMAC256(secretKey.getBytes()));
 	}
 
-	public String getUsernameFromToken(String token) {
+	public String getEmailFromToken(String token) {
 		DecodedJWT decodedJWT = getDecodedJWT(token);
 		return decodedJWT.getSubject();
 	}
 
-	public boolean validateToken(String token, String authenticatedUsername) {
-		String usernameFromToken = getUsernameFromToken(token);
-		boolean equalsUsername = usernameFromToken.equals(authenticatedUsername);
+	public boolean validateToken(String token, String authenticatedEmail) {
+		String emailFromToken = getEmailFromToken(token);
+		boolean equalsEmail = emailFromToken.equals(authenticatedEmail);
 		boolean tokenExpired = isTokenExpired(token);
-		return equalsUsername && !tokenExpired;
+		return equalsEmail && !tokenExpired;
 	}
 
 	private boolean isTokenExpired(String token) {
@@ -55,7 +62,7 @@ public class JwtTokenManager {
 	}
 
 	private DecodedJWT getDecodedJWT(String token) {
-		JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(jwtProperties.getSecretKey().getBytes())).build();
+		JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(secretKey.getBytes())).build();
 		return jwtVerifier.verify(token);
 	}
 }
