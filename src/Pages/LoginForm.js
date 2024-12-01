@@ -3,7 +3,7 @@ import agendar from "./../agendar.webp";
 
 export default function LoginForm() {
   const [isSignUpMode, setIsSignUpMode] = useState(false);
-  const [correo, setCorreo] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensajeError, setMensajeError] = useState("");
 
@@ -13,11 +13,11 @@ export default function LoginForm() {
     const requestOptions = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo, password }),
+      body: JSON.stringify({ email, password }),
     };
 
     try {
-      const response = await fetch("http://localhost:8080/login", requestOptions);
+      const response = await fetch("http://localhost:8080/auth/login", requestOptions);
       if (response.ok) {
         const data = await response.json();
         localStorage.setItem("token", data.token);
@@ -59,8 +59,8 @@ export default function LoginForm() {
                       type="email"
                       className="input-field"
                       autoComplete="off"
-                      value={correo}
-                      onChange={(e) => setCorreo(e.target.value)}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
                     />
                     <label>Correo</label>
