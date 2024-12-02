@@ -28,13 +28,13 @@ public class JwtTokenManager {
 
 	public String generateToken(User user) {
 		String email = user.getEmail();
-		UserRole userRole = user.getUserRole();
+		/*UserRole userRole = user.getUserRole();*/
 
 		return JWT.create()
 				.withSubject(email)
 				.withIssuer(issuer)
-				.withClaim("role", userRole.name())
-				.withIssuedAt(new Date())
+				/*withClaim("role", userRole.name())*/
+				.withIssuedAt(user.getFechaCreacion())
 				.withExpiresAt(new Date(System.currentTimeMillis() + expirationMinute * 60 * 1000))
 				.sign(Algorithm.HMAC256(secretKey.getBytes()));
 	}
