@@ -77,13 +77,13 @@ form.sign-up-form {
   font-size: 1.1rem;
   margin-top: -9px;
   letter-spacing: -0.5px;
-  color: #5603AD;
+  color: #a56799;
 }
 
 .heading h2 {
   font-size: 2.1rem;
   font-weight: 600;
-  color: #5603AD;
+  color: #a56799;
 }
 
 .heading h6 {
@@ -103,7 +103,7 @@ form.sign-up-form {
 }
 
 .toggle:hover {
-  color: #8371fd;
+  color: #a56799;
 }
 
 .input-wrap {
@@ -119,7 +119,7 @@ form.sign-up-form {
 }
 
 .input-field:focus {
-  border-color: #8371fd;
+  border-color: #a56799;
 }
 
 
@@ -161,8 +161,8 @@ label {
   display: inline-block;
   width: 100%;
   height: 43px;
-  background: linear-gradient(45deg, #5603AD, #8367C7);
-  color: #fff;
+  background: linear-gradient(45deg, #E5DAE2, #9D7F97);
+  color: #151111;
   border: none;
   cursor: pointer;
   border-radius: 0.8rem;
@@ -171,7 +171,7 @@ label {
 }
 
 .sign-btn:hover {
-  background-color: #8371fd;
+  background-color: #a56799;
 }
 
 .text {
@@ -185,7 +185,7 @@ label {
 }
 
 .text a:hover {
-  color: #8371fd;
+  color: #a56799;
 }
 
 main.sign-up-mode form.sign-in-form {
@@ -212,8 +212,8 @@ main.sign-up-mode .carousel-img {
   width: 55%;
   left: 45%;
   top: 0;
-  background-color: #8367C7;
-  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.7) 30%, rgba(133, 118, 170, 0.3) 70%);
+  background-color: #9D7F97;
+  background: linear-gradient(45deg,#E5DAE2 70%, #9D7F97) 30%;
   border-radius: 2rem 0 2rem 0; 
   display: flex;
   justify-content: center; 
@@ -228,29 +228,29 @@ main.sign-up-mode .carousel-img {
 .images-wrapper {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr;
+  grid-template-rows: auto;
   justify-content: center; 
   align-items: center;
 }
 
 .img-1 {
-  width: 100%;
-  height: 50%;
+  max-width: 500px; 
+  max-height: 500px;
   object-fit: cover;
   align-items: center;
   object-fit: cover;
-  border-radius: 0.2rem;
+  border-radius: 0.5rem;
 }
 .image-text {
-  margin-top: 10px;
+  position: relative;
+  top: 20px; 
   font-size: 12px;
   color: #333;
-  margin-top: -100px; 
   text-align: center;
 }
 .highlight {
   font-weight: bold;         
-  color:#5603AD;               
+  color:#6f6475;               
 }
 
 @media (max-width: 850px) {
