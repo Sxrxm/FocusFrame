@@ -10,7 +10,7 @@ import lombok.Setter;
 import java.sql.Time;
 
 @Entity
-@Table(name = "Funcionarios")
+@Table(name = "funcionario")
 @Getter
 @Setter
 @NoArgsConstructor

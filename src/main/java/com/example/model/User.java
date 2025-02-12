@@ -1,13 +1,8 @@
 package com.example.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.Date;
-
-
-
 
 @Getter
 @Setter
@@ -15,55 +10,37 @@ import java.util.Date;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Usuarios")
+@Table(name = "usuario")
 public class User {
 
-    public UserRole getUserRole() {
-        return userRole;
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
+    private Long id;
 
-    public void setUserRole(UserRole userRole) {
-        this.userRole = userRole;
-    }
+    /*@Column(name = "nombre")
+    private String name;*/
 
-    public Date getFechaCreacion() {
-        return fechaCreacion;
-    }
+    @Column(unique = true, name = "nombreUsusario")
+    private String username;
 
-    public void setFechaCreacion(Date fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
-    }
+    @Column(name = "email")
+    private String email;
 
-    public String getPassword() {
-        return password;
-    }
+    @Column(name = "contraseña")
+    private String password;
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    @Column(name = "fecha_creacion", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaCreacion;
 
-    public String getEmail() {
-        return email;
-    }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rol", nullable = false)
+    private UserRole userRole;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    @PrePersist
+    public void asignarFechaCreacion() {
+        this.fechaCreacion = new Date();
     }
 
     public Long getId() {
@@ -74,30 +51,45 @@ public class User {
         this.id = id;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_usuario")
-    private Long id;
-
-    @Column(name = "nombre")
-    private String name;
 
 
-    @Column(unique = true, name = "apellido")
-    private String username;
+    public String getUsername() {
+        return username;
+    }
 
-    @Column(name = "email")
-    private String email;
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-    @Column(name = "contraseña")
-    private String password;
+    public String getEmail() {
+        return email;
+    }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    @Column(name = "fecha_creacion")
-    private Date fechaCreacion;
+    public String getPassword() {
+        return password;
+    }
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "rol")
-    private UserRole userRole;
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
+    public Date getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(Date fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public UserRole getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
 }

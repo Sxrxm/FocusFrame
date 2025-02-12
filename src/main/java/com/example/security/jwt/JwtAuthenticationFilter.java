@@ -1,5 +1,6 @@
 package com.example.security.jwt;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.security.service.UserDetailsServiceImpl;
 import com.example.security.utils.SecurityConstants;
 import jakarta.servlet.FilterChain;
@@ -10,14 +11,18 @@ import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
-
+import java.util.stream.Collectors;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private static final Logger log = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
@@ -25,13 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private final JwtTokenManager jwtTokenManager;
 	private final UserDetailsServiceImpl userDetailsService;
 
-    public JwtAuthenticationFilter(JwtTokenManager jwtTokenManager, UserDetailsServiceImpl userDetailsService) {
-        this.jwtTokenManager = jwtTokenManager;
-        this.userDetailsService = userDetailsService;
-    }
+	public JwtAuthenticationFilter(JwtTokenManager jwtTokenManager, UserDetailsServiceImpl userDetailsService) {
+		this.jwtTokenManager = jwtTokenManager;
+		this.userDetailsService = userDetailsService;
+	}
 
-    @Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws IOException, ServletException {
 
 		final String header = request.getHeader(SecurityConstants.HEADER_STRING);
@@ -46,13 +51,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				email = jwtTokenManager.getEmailFromToken(authToken);
 			} catch (Exception e) {
 				log.error("Authentication Exception: {}", e.getMessage());
-				chain.doFilter(request, response);
+				filterChain.doFilter(request, response);
 				return;
 			}
 		}
 
 		if (Objects.isNull(email) || Objects.nonNull(SecurityContextHolder.getContext().getAuthentication())) {
-			chain.doFilter(request, response);
+			filterChain.doFilter(request, response);
 			return;
 		}
 
@@ -60,17 +65,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		boolean validToken = jwtTokenManager.validateToken(authToken, user.getUsername());
 
 		if (!validToken) {
-			chain.doFilter(request, response);
+			filterChain.doFilter(request, response);
 			return;
 		}
 
+		DecodedJWT decodedJWT = jwtTokenManager.getDecodedJWT(authToken);
+		List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
+
+
+
+		Collection<GrantedAuthority> authorities = roles.stream()
+				.map(SimpleGrantedAuthority::new)
+				.collect(Collectors.toList());
+
 		UsernamePasswordAuthenticationToken authentication =
-				new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+				new UsernamePasswordAuthenticationToken(user, null, authorities);
 		authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		log.info("Authentication successful. Logged in user: {}", email);
+		log.info("Autenticacion exitosa. Ingresaste con: {}", email);
 
-		chain.doFilter(request, response);
+		filterChain.doFilter(request, response);
 	}
 }

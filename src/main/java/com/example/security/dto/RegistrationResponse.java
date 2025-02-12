@@ -10,6 +10,8 @@ import lombok.Setter;
 @Setter
 
 public class RegistrationResponse {
+
+
 	private String message;
 
 	public RegistrationResponse() {}

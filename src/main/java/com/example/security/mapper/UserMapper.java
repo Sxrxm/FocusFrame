@@ -11,12 +11,12 @@ import org.mapstruct.factory.Mappers;
 @Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
 
-	UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+    UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
-	User convertToUser(RegistrationRequest registrationRequest);
+    User convertToUser(RegistrationRequest registrationRequest);
 
-	AuthenticatedUserDto convertToAuthenticatedUserDto(User user);
+    AuthenticatedUserDto convertToAuthenticatedUserDto(User user);
 
-	User convertToUser(AuthenticatedUserDto authenticatedUserDto);
+    User convertToUser(AuthenticatedUserDto authenticatedUserDto);
 
 }

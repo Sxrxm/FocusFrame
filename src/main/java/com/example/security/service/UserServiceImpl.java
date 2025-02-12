@@ -7,38 +7,44 @@ import com.example.security.dto.RegistrationRequest;
 import com.example.security.dto.RegistrationResponse;
 import com.example.security.mapper.UserMapper;
 import com.example.service.UserValidationService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Service
 public class UserServiceImpl implements UserService {
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
+	private static final String SPECIAL_CHARACTERS_PATTERN = "^(?=.*[!@#$%^&*(),.?\":{}|<>]).*$";
 
-	private static final String REGISTRATION_SUCCESSFUL = "registration_successful";
+
+
+	/*private static final String REGISTRATION_SUCCESSFUL = "registration_successful";*/
 
 	private final UserRepository userRepository;
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	private final UserValidationService userValidationService;
-	private final MessageSource messageSource;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserValidationService userValidationService, MessageSource messageSource) {
+
+
+	public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserValidationService userValidationService, MessageSource messageSource) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userValidationService = userValidationService;
-        this.messageSource = messageSource;
-    }
+	}
 
     @Override
 	public RegistrationResponse registration(RegistrationRequest registrationRequest) {
+
+		if (!validarContrasena(registrationRequest.getPassword())) {
+			return new RegistrationResponse("La contraseña debe contener al menos un carácter especial.");
+		}
 
 		userValidationService.validateUser(registrationRequest);
 
@@ -47,14 +53,19 @@ public class UserServiceImpl implements UserService {
 		userRepository.save(user);
 
 		final String email = registrationRequest.getEmail();
-		String registrationSuccessMessage = messageSource.getMessage(
-				REGISTRATION_SUCCESSFUL, new Object[]{email}, Locale.getDefault());
+		log.info("Registro realizado con éxito.: {}", user.getEmail());
+		/*String registrationSuccessMessage = messageSource.getMessage(
+				REGISTRATION_SUCCESSFUL, new Object[]{email}, Locale.getDefault());*/
 
-		log.info("Usuario registrado exitosamente: {}", user.getEmail());
 
-		return new RegistrationResponse("Usuario registrado exitosamente.");
+		return new RegistrationResponse("Registro realizado con éxito.");
 	}
 
+	private boolean validarContrasena(String password) {
+		Pattern pattern = Pattern.compile(SPECIAL_CHARACTERS_PATTERN);
+		Matcher matcher = pattern.matcher(password);
+		return matcher.matches();
+	}
 	@Override
 	public User findByEmail(String email) {
 		return userRepository.findByEmail(email);

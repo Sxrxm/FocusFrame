@@ -59,6 +59,7 @@ public class AuthController {
 
     @PostMapping("/register")
     ResponseEntity<RegistrationResponse> register(@RequestBody RegistrationRequest registrationRequest) {
+
         try {
             RegistrationResponse response = userService.registration(registrationRequest);
             return ResponseEntity.ok(response);
@@ -66,4 +67,5 @@ public class AuthController {
             return ResponseEntity.badRequest().body(new RegistrationResponse(e.getMessage()));
         }
         }
+
     }

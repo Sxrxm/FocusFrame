@@ -1,13 +1,9 @@
 package com.example.security.jwt;
 
 import com.example.model.User;
-import com.example.security.dto.AuthenticatedUserDto;
 import com.example.security.dto.LoginRequest;
 import com.example.security.dto.LoginResponse;
-import com.example.security.mapper.UserMapper; // Asegúrate de que este Mapper esté correctamente definido
 import com.example.security.service.UserService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;

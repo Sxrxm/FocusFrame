@@ -2,27 +2,33 @@ package com.example.service;
 
 import com.example.repository.UserRepository;
 import com.example.security.dto.RegistrationRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserValidationService {
 
-	private final UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	public UserValidationService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
-	// Método para validar el usuario durante el registro
 	public void validateUser(RegistrationRequest registrationRequest) {
-		// Validar que el correo electrónico no esté registrado previamente
 		if (userRepository.findByEmail(registrationRequest.getEmail()) != null) {
 			throw new IllegalArgumentException("El correo electrónico ya está registrado");
 		}
+		if (userRepository.findByUsername(registrationRequest.getUsername()) != null) {
+			throw new IllegalArgumentException("Este nombre de usuario ya se encuentra en uso.");
+		}
 
-		// Puedes agregar más validaciones, como verificar la fortaleza de la contraseña
-		if (registrationRequest.getPassword().length() < 6) {
-			throw new IllegalArgumentException("La contraseña debe tener al menos 6 caracteres");
+		if (registrationRequest.getPassword().length() < 12) {
+			throw new IllegalArgumentException("La contraseña debe tener al menos 12 caracteres");
+		}
+
+		if (registrationRequest.getEmail().length() < 8) {
+			throw new IllegalArgumentException("Ingrese un correo valido");
 		}
 	}
 }

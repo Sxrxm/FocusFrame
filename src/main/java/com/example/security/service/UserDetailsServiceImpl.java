@@ -30,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		AuthenticatedUserDto authenticatedUser = userService.findAuthenticatedUserByEmail(email);
 
 		if (authenticatedUser == null) {
-			throw new UsernameNotFoundException("Email not found");
+			throw new UsernameNotFoundException("Correo no encontrado.");
 		}
 
 

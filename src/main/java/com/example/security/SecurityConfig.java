@@ -6,6 +6,7 @@ import com.example.security.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -48,24 +49,26 @@ public class SecurityConfig implements WebMvcConfigurer {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authz -> authz
+                .authorizeHttpRequests(request -> request
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
+                        .requestMatchers( HttpMethod.POST,"/paciente/completar-perfil/").permitAll()
+                        /*.requestMatchers(HttpMethod.GET, "/paciente/**").authenticated()*/
+                        .requestMatchers(HttpMethod.POST, "/paciente/registrar").hasAuthority("PSICOLOGO")
+                        /*.requestMatchers( HttpMethod.POST,"/paciente/completar-perfil/").hasAuthority("PACIENTE")*/
                         .anyRequest().authenticated()
                 );
 
-        // Configurar el filtro JWT antes de la autenticación
         http.addFilterBefore(new JwtAuthenticationFilter(jwtTokenManager, userDetailsService), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // Configurar CORS
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000") // Permitir solicitudes desde el frontend React
-                .allowedMethods("GET", "POST", "PUT", "DELETE") // Métodos permitidos
-                .allowedHeaders("*") // Permitir todos los encabezados
-                .allowCredentials(true); // Permitir el uso de cookies si es necesario
+                .allowedOrigins("http://localhost:3000")
+                .allowedMethods("GET", "POST", "PUT", "DELETE")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }

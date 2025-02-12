@@ -9,7 +9,10 @@ import com.example.model.UserRole;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenManager {
@@ -28,12 +31,15 @@ public class JwtTokenManager {
 
 	public String generateToken(User user) {
 		String email = user.getEmail();
-		/*UserRole userRole = user.getUserRole();*/
+
+		List<String> roles = Arrays.stream(UserRole.values())
+				.map(UserRole::name)
+				.collect(Collectors.toList());
 
 		return JWT.create()
 				.withSubject(email)
 				.withIssuer(issuer)
-				/*withClaim("role", userRole.name())*/
+				.withClaim("roles", roles)  // Agregar los roles como un claim en el token
 				.withIssuedAt(user.getFechaCreacion())
 				.withExpiresAt(new Date(System.currentTimeMillis() + expirationMinute * 60 * 1000))
 				.sign(Algorithm.HMAC256(secretKey.getBytes()));
@@ -61,7 +67,7 @@ public class JwtTokenManager {
 		return decodedJWT.getExpiresAt();
 	}
 
-	private DecodedJWT getDecodedJWT(String token) {
+	public DecodedJWT getDecodedJWT(String token) {
 		JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(secretKey.getBytes())).build();
 		return jwtVerifier.verify(token);
 	}
