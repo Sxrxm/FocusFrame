@@ -41,17 +41,9 @@ const Home = () => {
       {/* Sección de Resumen */}
       <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 mt-10 gap-8">
         {/* Total Citas */}
-        <div className="bg-[#e5dae2] p-8 rounded-xl text-gray-300 flex flex-col gap-6 shadow-2xl">
-          <h4 className="text-2xl text-black">Total Citas</h4>
-          <span className="text-5xl text-gray-700">15</span>
-          
-          {/* Botón para abrir el Modal de Agendamiento */}
-          <button
-            className="mt-4 bg-[#9d7f97] text-white py-2 px-4 rounded-lg hover:bg-[#6f6475] transition-colors"
-            onClick={() => setIsAgendarModalOpen(true)}
-          >
-            Agendar una cita
-          </button>
+        <div className="bg-[#e5dae2] p-4 rounded-xl flex flex-col gap-4 shadow-2xl">
+          <h4 className="font-bold-Urbanist text-gray-700 text-lg">Total Citas</h4>
+          <span className="text-4xl font-bold text-gray-700">15</span>
         </div>
 
         {/* Citas Pendientes */}

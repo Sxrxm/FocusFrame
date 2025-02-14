@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../components/Header";
-import { HiMiniChevronDown } from "react-icons/hi2";
+
 
 const Pagos = () => {
 

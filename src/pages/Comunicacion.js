@@ -1,5 +1,5 @@
 import React from "react";
-import { FaSearch, FaRegCircle, FaCircle } from "react-icons/fa"; 
+import { FaSearch,FaCircle } from "react-icons/fa"; 
 import Header from "../components/Header";
 
 const Comunicacion = () => {
