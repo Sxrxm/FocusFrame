@@ -1,13 +1,14 @@
 package com.example.security.dto;
 
 
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 public class RegistroPacienteRequest {
 
-    @NotNull(message = "El teléfono es obligatorio.")
+    @NotEmpty(message = "El teléfono es obligatorio.")
     private Long telefono;
 
     @NotNull(message = "La fecha de nacimiento es obligatoria.")

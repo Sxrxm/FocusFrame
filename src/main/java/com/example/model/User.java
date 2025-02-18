@@ -1,5 +1,6 @@
 package com.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
@@ -37,6 +38,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false)
     private UserRole userRole;
+
+
+
 
     @PrePersist
     public void asignarFechaCreacion() {

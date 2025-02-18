@@ -48,16 +48,27 @@ public class RegistroPacienteService {
         paciente.setDocumento(registroPacienteRequest.getDocumento());
         paciente.setFechaNacimiento(registroPacienteRequest.getFechaNacimiento());
         paciente.setEmail(registroPacienteRequest.getEmail());
+        paciente.setEstado(false);
+        paciente.setPerfilCompletado(false);
         paciente.setUserRole(UserRole.PACIENTE);
-        paciente.setUser(usuario);
-
         paciente = pacienteRepository.save(paciente);
 
         String token = jwtTokenManager.generateToken(usuario);
-
         String enlace = "http://localhost:8080/paciente/completal-perfil/" + paciente.getIdPaciente() + "?token=" + token;
-        emailService.enviarCorreoConEnlace(paciente.getEmail(), enlace);
+        emailService.enviarCorreoConEnlace(paciente.getEmail(), enlace, usuario );
 
         return paciente;
+    }
+
+    public Paciente verificarToken (Long pacienteId, String token){
+        String email = jwtTokenManager.getEmailFromToken(token);
+        User usuario = userRepository.findByEmail(email);
+
+        if (usuario != null ){
+            Paciente paciente = pacienteRepository.findByEmail(usuario.getEmail());
+            if (paciente != null && paciente.getIdPaciente().equals(pacienteId))
+            return paciente;
+        }
+        return null;
     }
 }

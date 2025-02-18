@@ -14,8 +14,6 @@ public class RegistrationResponse {
 
 	private String message;
 
-	public RegistrationResponse() {}
-
 	public RegistrationResponse(String message) {
 		this.message = message;
 	}

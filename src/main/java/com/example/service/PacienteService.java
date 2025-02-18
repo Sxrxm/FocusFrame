@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PacienteService {
@@ -36,7 +37,15 @@ public class PacienteService {
         }
     }
 
-    public void eliminarPaciente(Long id) {
-        pacienteRepository.deleteById(id);
+    public Paciente desactivarPaciente(Long pacienteId) {
+        Optional<Paciente> pacienteExistente = pacienteRepository.findById(pacienteId);
+
+        if(pacienteExistente.isPresent()) {
+            Paciente paciente = pacienteExistente.get();
+            paciente.setEstado(false);
+            return pacienteRepository.save(paciente);
+        } else {
+            throw new RuntimeException("Paciente no encontrado");
+        }
     }
 }

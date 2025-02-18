@@ -1,6 +1,7 @@
 package com.example.security.service;
 
 import com.example.model.User;
+import com.example.model.UserRole;
 import com.example.repository.UserRepository;
 import com.example.security.dto.AuthenticatedUserDto;
 import com.example.security.dto.RegistrationRequest;
@@ -50,6 +51,7 @@ public class UserServiceImpl implements UserService {
 
 		final User user = UserMapper.INSTANCE.convertToUser(registrationRequest);
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		user.setUserRole(UserRole.PSICOLOGO);
 		userRepository.save(user);
 
 		final String email = registrationRequest.getEmail();

@@ -39,7 +39,7 @@ public class JwtTokenManager {
 		return JWT.create()
 				.withSubject(email)
 				.withIssuer(issuer)
-				.withClaim("roles", roles)  // Agregar los roles como un claim en el token
+				.withClaim("roles", roles)
 				.withIssuedAt(user.getFechaCreacion())
 				.withExpiresAt(new Date(System.currentTimeMillis() + expirationMinute * 60 * 1000))
 				.sign(Algorithm.HMAC256(secretKey.getBytes()));
