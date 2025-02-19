@@ -39,7 +39,6 @@ export default function LoginForm() {
 
   const toggleMode = () => setIsSignUpMode(!isSignUpMode);
 
-  
   /* Registro */
 
   const [username, setUserName] = useState("");
@@ -61,13 +60,13 @@ export default function LoginForm() {
 
     try {
       const response = await fetch(
-        "http://localhost:8080/auth/register",
+        "http://localhost:8080/paciente/completar-perfil/{pacienteId}",
         requestOptions
       );
       if (response.ok) {
         const data = await response.json();
         console.log("Registro exitoso:", data);
-        setIsSignUpMode(false); 
+        setIsSignUpMode(false);
       } else {
         const errorData = await response.json();
         setRegisterError(errorData.message || "Error en el registro");
@@ -164,17 +163,6 @@ export default function LoginForm() {
                       required
                     />
                     <label>Nombre</label>
-                  </div>
-                  <div className="input-wrap">
-                    <input
-                      type="email"
-                      className="input-field"
-                      autoComplete="off"
-                      value={registerEmail}
-                      onChange={(e) => setRegisterEmail(e.target.value)}
-                      required
-                    />
-                    <label>Correo</label>
                   </div>
                   <div className="input-wrap">
                     <input
