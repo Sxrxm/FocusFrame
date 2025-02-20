@@ -41,6 +41,8 @@ public class RegistroPacienteService {
         User usuario = new User();
         usuario.setUserRole(UserRole.PACIENTE);
         usuario.setEmail(registroPacienteRequest.getEmail());
+        usuario.setPassword("null");
+        usuario.setUsername("null");
         usuario = userRepository.save(usuario);
 
         Paciente paciente = new Paciente();
@@ -48,13 +50,14 @@ public class RegistroPacienteService {
         paciente.setDocumento(registroPacienteRequest.getDocumento());
         paciente.setFechaNacimiento(registroPacienteRequest.getFechaNacimiento());
         paciente.setEmail(registroPacienteRequest.getEmail());
+        paciente.setUser(usuario);
         paciente.setEstado(false);
         paciente.setPerfilCompletado(false);
         paciente.setUserRole(UserRole.PACIENTE);
         paciente = pacienteRepository.save(paciente);
 
         String token = jwtTokenManager.generateToken(usuario);
-        String enlace = "http://localhost:8080/paciente/completal-perfil/" + paciente.getIdPaciente() + "?token=" + token;
+        String enlace = "http://localhost:8080/paciente/completar-perfil/" + paciente.getIdPaciente() + "?token=" + token;
         emailService.enviarCorreoConEnlace(paciente.getEmail(), enlace, usuario );
 
         return paciente;

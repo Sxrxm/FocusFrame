@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -54,9 +53,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/paciente/registrar").hasAuthority("PSICOLOGO")
-                        .requestMatchers( HttpMethod.POST,"/paciente/completar-perfil/").hasRole("PACIENTE")
-                        /*.requestMatchers(HttpMethod.GET, "/paciente/**").authenticated()*/
-                        /*.requestMatchers( HttpMethod.POST,"/paciente/completar-perfil/").hasAuthority("PACIENTE")*/
+                        .requestMatchers( HttpMethod.POST,"/paciente/completar-perfil/**").permitAll()
                         .anyRequest().authenticated()
                 );
 

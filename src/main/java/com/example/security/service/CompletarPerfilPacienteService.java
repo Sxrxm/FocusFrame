@@ -3,42 +3,46 @@ package com.example.security.service;
 import com.example.model.Paciente;
 import com.example.model.User;
 import com.example.repository.PacienteRepository;
-import com.example.repository.UserRepository;
 import com.example.security.dto.CompletarPerfilPacienteRequest;
 import com.example.security.dto.PacienteResponse;
+import com.example.security.jwt.JwtTokenManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CompletarPerfilPacienteService {
 
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private PacienteRepository pacienteRepository;
 
     @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
+    private UserService userService;
 
+    @Autowired
+    private JwtTokenManager jwtTokenManager;
 
-    public PacienteResponse completarPerfil(Long pacienteId, CompletarPerfilPacienteRequest request) {
+    @Transactional
+    public PacienteResponse completarPerfil(Long pacienteId, CompletarPerfilPacienteRequest request, String token) {
 
-        Paciente paciente = pacienteRepository.findById(pacienteId)
-                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+        String email = jwtTokenManager.getEmailFromToken(token);
+        User usuario = userService.findByEmail(email);
 
-        User usuario = paciente.getUser();
         if (usuario == null) {
-            throw new RuntimeException("El paciente no tiene un usuario asociado.");
+            throw new IllegalArgumentException("Token no válido o usuario no encontrado");
+        }
+
+        Paciente paciente = pacienteRepository.findById(pacienteId).orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado"));
+
+        if (paciente.getUser() == null || !paciente.getUser().getId().equals(usuario.getId())) {
+            throw new IllegalArgumentException("El paciente no tiene un usuario asociado o los datos no coinciden");
         }
 
 
 
-        usuario.setUsername(request.getUsername());
-        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         paciente.setPerfilCompletado(true);
-        userRepository.save(usuario);
+        pacienteRepository.save(paciente);
 
         PacienteResponse response = new PacienteResponse();
         response.setIdPaciente(paciente.getIdPaciente());

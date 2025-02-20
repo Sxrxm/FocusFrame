@@ -2,7 +2,6 @@ package com.example.service;
 
 
 import com.example.model.Paciente;
-import com.example.model.UserRole;
 import com.example.repository.PacienteRepository;
 import com.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

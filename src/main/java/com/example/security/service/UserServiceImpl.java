@@ -20,6 +20,8 @@ import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+
 	private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	private static final String SPECIAL_CHARACTERS_PATTERN = "^(?=.*[!@#$%^&*(),.?\":{}|<>]).*$";
@@ -34,13 +36,18 @@ public class UserServiceImpl implements UserService {
 
 
 
-	public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserValidationService userValidationService, MessageSource messageSource) {
-        this.userRepository = userRepository;
+	public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, UserValidationService userValidationService, MessageSource messageSource, UserRepository userRepository1){
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userValidationService = userValidationService;
+        this.userRepository = userRepository;
+    }
+
+	@Override
+	public User findByEmail(String Email) {
+		return userRepository.findByEmail(Email);
 	}
 
-    @Override
+	@Override
 	public RegistrationResponse registration(RegistrationRequest registrationRequest) {
 
 		if (!validarContrasena(registrationRequest.getPassword())) {
@@ -67,10 +74,6 @@ public class UserServiceImpl implements UserService {
 		Pattern pattern = Pattern.compile(SPECIAL_CHARACTERS_PATTERN);
 		Matcher matcher = pattern.matcher(password);
 		return matcher.matches();
-	}
-	@Override
-	public User findByEmail(String email) {
-		return userRepository.findByEmail(email);
 	}
 
 	@Override

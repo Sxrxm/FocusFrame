@@ -22,13 +22,13 @@ public class User {
     /*@Column(name = "nombre")
     private String name;*/
 
-    @Column(unique = true, name = "nombreUsusario")
+    @Column(unique = true, name = "nombreUsusario", nullable = true)
     private String username;
 
     @Column(name = "email")
     private String email;
 
-    @Column(name = "contraseña")
+    @Column(name = "contraseña", nullable = true)
     private String password;
 
     @Column(name = "fecha_creacion", updatable = false)
