@@ -1,194 +1,113 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom"; 
 import agendar from "./../agendar.webp";
 
 export default function LoginForm() {
-  {
-    /* Ingresar */
-  }
-  const [isSignUpMode, setIsSignUpMode] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  
   const [mensajeError, setMensajeError] = useState("");
+  const [password, setPasswordValue] = useState("");
+  const [email, setEmailValue] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    };
+  
+  const navigate = useNavigate();
 
-    try {
-      const response = await fetch(
-        "http://localhost:8080/auth/login",
-        requestOptions
-      );
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem("token", data.token);
-        console.log("Inicio de sesión exitoso:", data);
-      } else {
-        const errorData = await response.json();
-        setMensajeError(errorData.message || "Error en el inicio de sesión");
-      }
-    } catch (error) {
-      setMensajeError("Error de conexión con el servidor");
-      console.error("Error de conexión:", error);
-    }
+  
+  const handlePasswordChange = (e) => {
+    setPasswordValue(e.target.value);
   };
 
-  const toggleMode = () => setIsSignUpMode(!isSignUpMode);
+  const handleEmailChange = (e) => {
+    setEmailValue(e.target.value);
+  };
 
-  /* Registro */
-
-  const [username, setUserName] = useState("");
-  const [registerEmail, setRegisterEmail] = useState("");
-  const [registerPassword, setRegisterPassword] = useState("");
-  const [registerError, setRegisterError] = useState("");
-
-  const handleRegister = async (e) => {
+  //  Iniciar Sesión
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username,
-        email: registerEmail,
-        password: registerPassword,
-      }),
+    console.log("Datos enviados: " + email + " " + password);
+
+    const data = {
+      email: email,
+      password: password
     };
 
     try {
-      const response = await fetch(
-        "http://localhost:8080/paciente/completar-perfil/{pacienteId}",
-        requestOptions
-      );
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Registro exitoso:", data);
-        setIsSignUpMode(false);
+      const response = await axios.post("http://localhost:8081/auth/login", data);
+
+      if (response.data && response.data.token) {
+
+        // Guardar token 
+        localStorage.setItem("token", response.data.token);
+        
+        alert("Login exitoso");
+        console.log("Token recibido:", response.data.token);
+
+        // Redirigir 
+        navigate("/dashboard");
       } else {
-        const errorData = await response.json();
-        setRegisterError(errorData.message || "Error en el registro");
+        alert("Usuario o contraseña incorrectos");
       }
     } catch (error) {
-      setRegisterError("Error de conexión con el servidor");
-      console.error("Error de conexión:", error);
+      if (error.response) {
+
+        // Capturar errores específicos del backend
+        if (error.response.status === 401) {
+          setMensajeError("Usuario o contraseña incorrectos");
+        } else if (error.response.status === 500) {
+          setMensajeError("Error en el servidor, intenta más tarde");
+        } else {
+          setMensajeError("Error desconocido");
+        }
+      } else {
+        setMensajeError("No se pudo conectar con el servidor");
+      }
     }
   };
 
   return (
-    <main className={isSignUpMode ? "sign-up-mode" : ""}>
+    <main>
       <div className="box">
         <div className="inner-box">
           <div className="forms-wrap">
-            {/* Formulario de Inicio de Sesión */}
-            {!isSignUpMode && (
-              <form
-                onSubmit={handleLogin}
-                autoComplete="off"
-                className="sign-in-form"
-              >
-                <div className="logo">
-                  <h4>Focus Frame</h4>
+            <form onSubmit={handleLogin} autoComplete="off" className="sign-in-form">
+              <div className="logo">
+                <h4>Focus Frame</h4>
+              </div>
+              <div className="heading">
+                <h2>¡Bienvenidos!</h2>
+                <h6>¿No estás registrado?</h6>
+                <a href="/register" className="toggle">Registrarse</a>
+              </div>
+              <div className="actual-form">
+                <div className="input-wrap">
+                  <input
+                    type="email"
+                    className="input-field"
+                    autoComplete="off"
+                    value={email}
+                    onChange={handleEmailChange}
+                    required
+                  />
+                  <label>Correo</label>
                 </div>
-                <div className="heading">
-                  <h2>¡Bienvenidos!</h2>
-                  <h6>¿No estás registrado?</h6>
-                  <a href="#" onClick={toggleMode} className="toggle">
-                    Registrarse
-                  </a>
+                <div className="input-wrap">
+                  <input
+                    type="password"
+                    className="input-field"
+                    autoComplete="off"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    required
+                  />
+                  <label>Contraseña</label>
                 </div>
-                <div className="actual-form">
-                  <div className="input-wrap">
-                    <input
-                      type="email"
-                      className="input-field"
-                      autoComplete="off"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                    <label>Correo</label>
-                  </div>
-                  <div className="input-wrap">
-                    <input
-                      type="password"
-                      className="input-field"
-                      autoComplete="off"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                    <label>Contraseña</label>
-                  </div>
-                  <button type="submit" className="sign-btn">
-                    Iniciar Sesión
-                  </button>
-                  {mensajeError && (
-                    <p className="error-message">{mensajeError}</p>
-                  )}
-                  <p className="text">
-                    ¿Olvidaste tu contraseña? <a href="#">Recuperar</a>
-                  </p>
-                </div>
-              </form>
-            )}
-
-            {/* Formulario de Registro */}
-            {isSignUpMode && (
-              <form
-                onSubmit={handleRegister}
-                autoComplete="off"
-                className="sign-up-form"
-              >
-                <div className="logo">
-                  <h4>Focus Frame</h4>
-                </div>
-                <div className="heading">
-                  <h2>Registrarse</h2>
-                  <h6>¿Ya tienes una cuenta?</h6>
-                  <a href="#" onClick={toggleMode} className="toggle">
-                    Iniciar Sesión
-                  </a>
-                </div>
-                <div className="actual-form">
-                  <div className="input-wrap">
-                    <input
-                      type="text"
-                      className="input-field"
-                      autoComplete="off"
-                      value={username}
-                      onChange={(e) => setUserName(e.target.value)}
-                      required
-                    />
-                    <label>Nombre</label>
-                  </div>
-                  <div className="input-wrap">
-                    <input
-                      type="password"
-                      className="input-field"
-                      autoComplete="off"
-                      value={registerPassword}
-                      onChange={(e) => setRegisterPassword(e.target.value)}
-                      required
-                    />
-                    <label>Contraseña</label>
-                  </div>
-                  <button type="submit" className="sign-btn">
-                    Registrarme
-                  </button>
-                  {registerError && (
-                    <p className="error-message">{registerError}</p>
-                  )}
-                  <p className="text">
-                    Al registrarme, acepto los{" "}
-                    <a href="#">Términos de Servicio</a> y la{" "}
-                    <a href="#">Política de Privacidad</a>
-                  </p>
-                </div>
-              </form>
-            )}
+                <button type="submit" className="sign-btn">Iniciar Sesión</button>
+                {mensajeError && <p className="error-message">{mensajeError}</p>}
+                <p className="text">
+                  ¿Olvidaste tu contraseña? <a href="#">Recuperar</a>
+                </p>
+              </div>
+            </form>
           </div>
 
           {/* Sección de Imagen */}

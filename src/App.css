@@ -68,10 +68,6 @@ form {
   
 }
 
-form.sign-up-form {
-  opacity: 0;
-  pointer-events: none;
-}
 
 .logo h4 {
   font-size: 1.1rem;
@@ -177,6 +173,7 @@ label {
 .text {
   color: #bbb;
   font-size: 0.7rem;
+  margin-top: 8px;
 }
 
 .text a {
@@ -187,24 +184,16 @@ label {
 .text a:hover {
   color: #a56799;
 }
-
-main.sign-up-mode form.sign-in-form {
-  opacity: 0;
-  pointer-events: none;
+.error-message {
+  color: #cc0000; 
+  font-size: 12px; 
+  font-weight: normal;
+  text-align: center;
+  display: block;
+  margin: 4px auto; 
+  width: 100%;
 }
 
-main.sign-up-mode form.sign-up-form {
-  opacity: 1;
-  pointer-events: all;
-}
-
-main.sign-up-mode .forms-wrap {
-  left: 55%;
-}
-
-main.sign-up-mode .carousel-img {
-  left: 0%;
-}
 
 .carousel-img {
   position: absolute;
@@ -284,18 +273,7 @@ main.sign-up-mode .carousel-img {
     margin: 2rem 0;
   }
 
-  form.sign-up-form {
-    transform: translateX(100%);
-  }
-
-  main.sign-up-mode form.sign-in-form {
-    transform: translateX(-100%);
-  }
-
-  main.sign-up-mode form.sign-up-form {
-    transform: translateX(0%);
-  }
-
+  
   .carousel-img {
     position: revert;
     height: auto;
