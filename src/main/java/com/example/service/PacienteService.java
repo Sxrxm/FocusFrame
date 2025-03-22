@@ -2,6 +2,9 @@ package com.example.service;
 
 
 import com.example.model.Paciente;
+import com.example.model.Sesion;
+import com.example.model.User;
+import com.example.model.UserRole;
 import com.example.repository.PacienteRepository;
 import com.example.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,5 +49,12 @@ public class PacienteService {
         } else {
             throw new RuntimeException("Paciente no encontrado");
         }
+    }
+
+    public List<Sesion> obtenerSesionesDePaciente(Long pacienteId) {
+        Paciente paciente = pacienteRepository.findById(pacienteId)
+                .orElseThrow(() -> new RuntimeException("Paciente no encontrado"));
+
+        return paciente.getSesions();
     }
 }

@@ -1,0 +1,8 @@
+# messages.properties
+
+email.already.exist=El correo electrónico ya está registrado
+username.already.exists=Este nombre de usuario ya se encuentra en uso
+password.length=La contraseña debe tener al menos 12 caracteres
+invalid.email=El correo electrónico no es válido
+password.special.char=La contraseña debe contener al menos un carácter especial
+registration.success=Registro realizado con éxito.

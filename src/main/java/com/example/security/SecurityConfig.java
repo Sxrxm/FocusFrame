@@ -49,11 +49,14 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> cors.configure(http))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers(HttpMethod.POST,"/funcionario/paso1").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/funcionario/paso2/**").permitAll()
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/paciente/registrar").hasAuthority("PSICOLOGO")
-                        .requestMatchers( HttpMethod.POST,"/paciente/completar-perfil/**").permitAll()
+                        .requestMatchers( HttpMethod.POST,"/paciente/**").permitAll()
                         .anyRequest().authenticated()
                 );
 
@@ -66,8 +69,8 @@ public class SecurityConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOrigins("http://localhost:3000")
-                .allowedMethods("GET", "POST", "PUT", "DELETE")
-                .allowedHeaders("*")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("Content-Type", "Authorization")
                 .allowCredentials(true);
     }
 }

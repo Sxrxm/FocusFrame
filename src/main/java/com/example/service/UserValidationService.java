@@ -5,6 +5,9 @@ import com.example.security.dto.RegistrationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 @Service
 public class UserValidationService {
 
@@ -14,6 +17,7 @@ public class UserValidationService {
 	public UserValidationService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
+
 
 	public void validateUser(RegistrationRequest registrationRequest) {
 		if (userRepository.findByEmail(registrationRequest.getEmail()) != null) {
@@ -30,5 +34,15 @@ public class UserValidationService {
 		if (registrationRequest.getEmail().length() < 8) {
 			throw new IllegalArgumentException("Ingrese un correo valido");
 		}
+		if (!isValidEmail(registrationRequest.getEmail())) {
+			throw new IllegalArgumentException(("El correo electronico no es valido"));
+		}
+	}
+
+	private boolean isValidEmail(String email) {
+		String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+		Pattern pattern = Pattern.compile(emailRegex);
+		Matcher matcher = pattern.matcher(email);
+		return matcher.matches();
 	}
 }

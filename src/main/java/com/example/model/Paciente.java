@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "paciente")
@@ -20,6 +21,12 @@ public class Paciente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, name = "id_paciente")
     private Long idPaciente;
+
+    @Column(nullable = false, name = "nombre")
+    private String nombre;
+
+    @Column(nullable = false, name = "apellido")
+    private String apellido;
 
 
     @Column(nullable = false, name = "telefono")
@@ -37,6 +44,53 @@ public class Paciente {
 
     @Column(nullable = false)
     private Boolean estado = true;
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JsonIgnore
+    @JoinColumn(name = "id_usuario")
+    private User user;
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "paciente")
+    @JsonIgnore
+    private List<Sesion> sesions;
+
+    @Column(name = "fecha_creacion", updatable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaCreacion;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "rol")
+    private UserRole userRole;
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getApellido() {
+        return apellido;
+    }
+
+    public void setApellido(String apellido) {
+        this.apellido = apellido;
+    }
+
+    public List<Sesion> getSesions() {
+        return sesions;
+    }
+
+    public void setSesions(List<Sesion> sesions) {
+        this.sesions = sesions;
+    }
+
+    @PrePersist
+    public void asignarFechaCreacion() {
+        this.fechaCreacion = new Date();
+    }
 
 
 
@@ -76,23 +130,6 @@ public class Paciente {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    @ManyToOne(optional = true, fetch = FetchType.LAZY)
-    @JsonIgnore
-    @JoinColumn(name = "id_usuario")
-    private User user;
-
-    @Column(name = "fecha_creacion", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date fechaCreacion;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "rol")
-    private UserRole userRole;
-
-    @PrePersist
-    public void asignarFechaCreacion() {
-        this.fechaCreacion = new Date();
-    }
 
     public Long getIdPaciente() {
         return idPaciente;

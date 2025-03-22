@@ -44,8 +44,6 @@ public class PacienteController {
     @Autowired
     private PacienteService pacienteService;
 
-    @Autowired
-    private CompletarPerfilPacienteService completarPerfilPacienteService;
 
     @Autowired
     private RegistroPacienteService registroPacienteService;
@@ -55,14 +53,7 @@ public class PacienteController {
     private PacienteRepository pacienteRepository;
 
     @Autowired
-    private JwtTokenManager jwtTokenManager;
-
-    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetails;
-
 
 
 
@@ -73,29 +64,29 @@ public class PacienteController {
     }
 
 
-    @PreAuthorize("hasRole('PACIENTE')")
     @PostMapping("/completar-perfil/{pacienteId}")
     public ResponseEntity<String> completarPerfil(
             @PathVariable Long pacienteId,
-            @RequestParam String token,
             @RequestBody CompletarPerfilPacienteRequest request) {
 
-        String email = jwtTokenManager.getEmailFromToken(token);
-        if (StringUtils.isEmpty(email)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido o expirado");
-        }
 
-        User usuario = userRepository.findByEmail(email);
-
-        if (usuario == null) {
-            log.error("usuario no encontrado con el email {}", email);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token no válido o usuario no encontrado");
-        }
 
         Paciente paciente = pacienteRepository.findById(pacienteId).orElse(null);
         if (paciente == null || !paciente.getIdPaciente().equals(pacienteId)) {
             log.error("paciente no encontrado o el id no coincide{}", pacienteId);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Paciente no encontrado o ID no coincide");
+        }
+
+        if (paciente.isPerfilCompletado()){
+            log.error("El perfil ya esta completado{}", pacienteId);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("El perfil ya está completado.");
+        }
+
+        User usuario = userRepository.findByEmail(paciente.getEmail());
+
+        if (usuario == null) {
+            log.error("usuario no encontrado con el email {}", paciente.getEmail());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("usuario no encontrado");
         }
 
         paciente.setEstado(true);
@@ -106,7 +97,7 @@ public class PacienteController {
         userRepository.save(usuario);
         pacienteRepository.save(paciente);
 
-        return ResponseEntity.ok("Perfil completado con éxito");
+        return ResponseEntity.ok("Perfil completado con éxito");
     }
 
 
@@ -114,12 +105,12 @@ public class PacienteController {
 
     @PostMapping("/desactivar/{pacienteId}")
     public ResponseEntity<Paciente> desactivarPaciente(@PathVariable Long pacienteId) {
-       try {
-           Paciente pacienteDessactivado = pacienteService.desactivarPaciente(pacienteId);
-           return new ResponseEntity<>(pacienteDessactivado, HttpStatus.OK);
-       }catch (RuntimeException e){
-           return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-       }
+        try {
+            Paciente pacienteDessactivado = pacienteService.desactivarPaciente(pacienteId);
+            return new ResponseEntity<>(pacienteDessactivado, HttpStatus.OK);
+        }catch (RuntimeException e){
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/pacientes")
@@ -137,4 +128,3 @@ public class PacienteController {
         }
     }
 }
-

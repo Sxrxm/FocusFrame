@@ -2,6 +2,7 @@ package com.example.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import java.util.Date;
 
@@ -26,6 +27,7 @@ public class User {
     private String username;
 
     @Column(name = "email")
+    @Email(message = "el correo electrónico debe ser válido")
     private String email;
 
     @Column(name = "contraseña", nullable = true)
@@ -38,8 +40,6 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false)
     private UserRole userRole;
-
-
 
 
     @PrePersist

@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 @Service
 public class AuthenticationService {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class); // Usa el logger de SLF4J
+    private static final Logger log = LoggerFactory.getLogger(AuthenticationService.class);
 
     private final UserRepository userRepository;
     private final JwtTokenManager jwtTokenManager;
@@ -33,20 +33,27 @@ public class AuthenticationService {
 
     public String authenticate(String email, String password) {
         try {
-            User user = userRepository.findByEmail(email);
+            log.info("Intentando autenticar al usuario con correo: {}", email);
 
+            User user = userRepository.findByEmail(email);
             if (user == null) {
+                log.warn("Usuario no encontrado con correo: {}", email);
                 throw new UsernameNotFoundException("Usuario no encontrado");
             }
 
+            log.info("Usuario encontrado: {}", user.getEmail());
+
             if (!passwordEncoder.matches(password, user.getPassword())) {
+                log.warn("Contraseña incorrecta para el usuario: {}", email);
                 throw new BadCredentialsException("Contraseña incorrecta");
             }
+
+            log.info("Autenticación exitosa para el usuario: {}", email);
 
             return jwtTokenManager.generateToken(user);
 
         } catch (UsernameNotFoundException | BadCredentialsException e) {
-            log.error("Error de autenticación: {}", e.getMessage(), e); // Usa log.error para manejar excepciones
+            log.error("Error de autenticación: {}", e.getMessage(), e);
             throw e;
         } catch (Exception e) {
             log.error("Error al intentar autenticar al usuario: {}", e.getMessage(), e);

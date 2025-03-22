@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
 				REGISTRATION_SUCCESSFUL, new Object[]{email}, Locale.getDefault());*/
 
 
-		return new RegistrationResponse("Registro realizado con éxito.");
+		return new RegistrationResponse("Registro realizado con éxito <3.");
 	}
 
 	private boolean validarContrasena(String password) {

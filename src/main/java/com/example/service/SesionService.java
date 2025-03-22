@@ -1,13 +1,12 @@
-package com.example.security.service;
+package com.example.service;
 
-import com.example.model.Paciente;
+import com.example.model.Funcionario;
 import com.example.model.Sesion;
-import com.example.model.User;
-import com.example.model.UserRole;
+import com.example.repository.FuncionarioRepository;
 import com.example.repository.SesionRepository;
-import com.example.security.dto.RegistroPacienteRequest;
 import com.example.security.dto.SesionRequest;
 import com.example.security.dto.SesionResponse;
+import jakarta.persistence.Id;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +19,9 @@ public class SesionService {
     @Autowired
     private SesionRepository sesionRepository;
 
+    @Autowired
+    private FuncionarioRepository funcionarioRepository;
+
     public List<Sesion> getAllSesiones() {
         return sesionRepository.findAll();
     }
@@ -29,9 +31,11 @@ public class SesionService {
         return sesionRepository.findById(id);
     }
 
-    public Sesion registrarSesion(SesionRequest sesionRequest) {
+    public SesionResponse registrarSesion(SesionRequest sesionRequest) {
 
+        Funcionario funcionario = funcionarioRepository.findById(sesionRequest.getIdFuncionario()).orElseThrow(() -> new RuntimeException("Funcionario no encontrado"));
         Sesion sesion = new Sesion();
+        sesion.setFuncionario(funcionario);
         sesion.setNombre(sesionRequest.getNombre());
         sesion.setFechaSesion(sesionRequest.getFechaSesion());
         sesion.setHora(sesionRequest.getHora());
@@ -40,9 +44,20 @@ public class SesionService {
         sesion.setEstado(Sesion.EstadoSesion.PENDIENTE);
 
 
+
         sesion = sesionRepository.save(sesion);
 
-       return sesion;
+        return new SesionResponse(
+                sesion.getId(),
+                sesion.getNombre(),
+                sesion.getFuncionario().getIdFuncionario(),
+                sesion.getPaciente().getIdPaciente(),
+                sesion.getFechaSesion(),
+                sesion.getHora(),
+                sesion.getMonto(),
+                sesion.getMetodoPago(),
+                sesion.getEstado()
+        );
     }
 
 

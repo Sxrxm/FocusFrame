@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.sql.Time;
+import java.util.List;
 
 @Entity
 @Table(name = "funcionario")
@@ -41,4 +42,63 @@ public class Funcionario {
     @JoinColumn(name = "id_usuario")
     private User user;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "funcionario")
+    @JsonIgnore
+    private List<Sesion> sesions;
+
+    public Long getIdFuncionario() {
+        return idFuncionario;
+    }
+
+    public void setIdFuncionario(Long idFuncionario) {
+        this.idFuncionario = idFuncionario;
+    }
+
+    public String getEspecialidad() {
+        return especialidad;
+    }
+
+    public void setEspecialidad(String especialidad) {
+        this.especialidad = especialidad;
+    }
+
+    public String getExperiencia() {
+        return experiencia;
+    }
+
+    public void setExperiencia(String experiencia) {
+        this.experiencia = experiencia;
+    }
+
+    public String getLicencia() {
+        return licencia;
+    }
+
+    public void setLicencia(String licencia) {
+        this.licencia = licencia;
+    }
+
+    public Boolean getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Boolean estado) {
+        this.estado = estado;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Sesion> getSesions() {
+        return sesions;
+    }
+
+    public void setSesions(List<Sesion> sesions) {
+        this.sesions = sesions;
+    }
 }

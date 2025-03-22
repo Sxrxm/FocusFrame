@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres-container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: focusframe
+      POSTGRES_DB: focusframe
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - postgres-network
+    restart: always
+
+volumes:
+  postgres-data:
+    driver: local
+
+networks:
+  postgres-network:
+    driver: bridge
